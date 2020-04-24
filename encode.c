@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <lzss.h>
 
 #define P   1			/* If match length <= P then output one character */
@@ -10,74 +7,89 @@ unsigned long textcount = 0;
 int bit_buffer = 0;
 int bit_mask = 128;
 
-static void
-error(void)
-{
-	printf("Output error\n");
-	exit(1);
-}
-
-static void
+static int
 putbit1(int (* put)(int c, void *), void *pd)
 {
 	bit_buffer |= bit_mask;
 
 	if ((bit_mask >>= 1) == 0)
 	{
-		if (put(bit_buffer, pd) == EOF)
-			error();
+		if (put(bit_buffer, pd) < 0)
+			return lzss_OUTPUT;
 
 		bit_buffer = 0;
 		bit_mask = 128;
 		codecount++;
 	}
+
+	return lzss_OK;
 }
 
-static void
+static int
 putbit0(int (* put)(int c, void *), void *pd)
 {
 	if ((bit_mask >>= 1) == 0)
 	{
-		if (put(bit_buffer, pd) == EOF)
-			error();
+		if (put(bit_buffer, pd) < 0)
+			return lzss_OUTPUT;
 
 		bit_buffer = 0;
 		bit_mask = 128;
 		codecount++;
 	}
+
+	return lzss_OK;
 }
 
-static void
+static int
 output1(int (* put)(int c, void *), void *pd, int c)
 {
 	int mask;
 
-	putbit1(put, pd);
+	if (putbit1(put, pd) < 0)
+		return lzss_OUTPUT;
+
 	mask = 256;
 
 	while (mask >>= 1)
 	{
 		if (c & mask)
-			putbit1(put, pd);
+		{
+			if (putbit1(put, pd) < 0)
+				return lzss_OUTPUT;
+		}
 		else
-			putbit0(put, pd);
+		{
+			if (putbit0(put, pd) < 0)
+				return lzss_OUTPUT;
+		}
 	}
+
+	return lzss_OK;
 }
 
-static void
+static int
 output2(int (* put)(int c, void *), void *pd, int x, int y)
 {
 	int mask;
 
-	putbit0(put, pd);
+	if (putbit0(put, pd) < 0)
+		return lzss_OUTPUT;
+
 	mask = N;
 
 	while (mask >>= 1)
 	{
 		if (x & mask)
-			putbit1(put, pd);
+		{
+			if (putbit1(put, pd) < 0)
+				return lzss_OUTPUT;
+		}
 		else
-			putbit0(put, pd);
+		{
+			if (putbit0(put, pd) < 0)
+				return lzss_OUTPUT;
+		}
 	}
 
 	mask = (1 << EJ);
@@ -85,25 +97,35 @@ output2(int (* put)(int c, void *), void *pd, int x, int y)
 	while (mask >>= 1)
 	{
 		if (y & mask)
-			putbit1(put, pd);
+		{
+			if (putbit1(put, pd) < 0)
+				return lzss_OUTPUT;
+		}
 		else
-			putbit0(put, pd);
+		{
+			if (putbit0(put, pd) < 0)
+				return lzss_OUTPUT;
+		}
 	}
+
+	return lzss_OK;
 }
 
-static void
+static int
 flush_bit_buffer(int (* put)(int c, void *), void *pd)
 {
 	if (bit_mask != 128)
 	{
-		if (put(bit_buffer, pd) == EOF)
-			error();
+		if (put(bit_buffer, pd) < 0)
+			return lzss_OUTPUT;
 
 		codecount++;
 	}
+
+	return lzss_OK;
 }
 
-void
+int
 lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 {
 	int i, j, f1, x, y, r, s, bufferend, c;
@@ -113,7 +135,7 @@ lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 
 	for (i = N - F; i < N * 2; i++)
 	{
-		if ((c = get(gd)) == EOF)
+		if ((c = get(gd)) < 0)
 			break;
 		buffer[i] = c;
 		textcount++;
@@ -147,10 +169,14 @@ lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 		if (y <= P)
 		{
 			y = 1;
-			output1(put, pd, c);
+			if (output1(put, pd, c) < 0)
+				return lzss_OUTPUT;
 		}
 		else
-			output2(put, pd, x & (N - 1), y - 2);
+		{
+			if (output2(put, pd, x & (N - 1), y - 2) < 0)
+				return lzss_OUTPUT;
+		}
 
 		r += y;
 		s += y;
@@ -167,7 +193,7 @@ lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 
 			while (bufferend < N * 2)
 			{
-				if ((c = get(gd)) == EOF)
+				if ((c = get(gd)) < 0)
 					break;
 
 				buffer[bufferend++] = c;
@@ -176,5 +202,5 @@ lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 		}
 	}
 
-	flush_bit_buffer(put, pd);
+	return flush_bit_buffer(put, pd);
 }

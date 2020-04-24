@@ -6,6 +6,12 @@
 #define N (1 << EI)				/* buffer size */
 #define F ((1 << EJ) + 1)	/* lookahead buffer size */
 
+#define	lzss_OK	0
+#define	lzss_OUTPUT	(-2)
+
+#define	lzss_is_error(a)	((a) < 0)
+#define	lzss_is_ok(a)			(!lzss_is_error(a))
+
 #define	lzss_get(f)	((int(*)(void *))(f))
 #define	lzss_put(f)	((int(*)(int, void*))(f))
 
@@ -13,10 +19,10 @@
 extern "C" {
 #endif
 
-void lzss_decode(
+int lzss_decode(
         int (*get)(void *), void *gd,
         int (*put)(int, void *), void *pd);
-void lzss_encode(
+int lzss_encode(
         int (*get)(void *), void *gd,
         int (*put)(int, void *), void *pd);
 

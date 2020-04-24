@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include <lzss.h>
 
 /* get n bits */
@@ -14,8 +12,8 @@ getbit(int (*get)(void *), void *gd, int n)
 	{
 		if (mask == 0)
 		{
-			if ((buf = get(gd)) == EOF)
-				return EOF;
+			if ((buf = get(gd)) < 0)
+				return -1;
 
 			mask = 128;
 		}
@@ -31,7 +29,7 @@ getbit(int (*get)(void *), void *gd, int n)
 	return x;
 }
 
-void
+int
 lzss_decode(int (*get)(void *), void * gd, int (*put)(int, void *), void *pd)
 {
 	int i, j, k, r, c;
@@ -41,11 +39,11 @@ lzss_decode(int (*get)(void *), void * gd, int (*put)(int, void *), void *pd)
 
 	r = N - F;
 
-	while ((c = getbit(get, gd, 1)) != EOF)
+	while ((c = getbit(get, gd, 1)) >= 0)
 	{
 		if (c)
 		{
-			if ((c = getbit(get, gd, 8)) == EOF)
+			if ((c = getbit(get, gd, 8)) < 0)
 				break;
 
 			put(c, pd);
@@ -54,10 +52,10 @@ lzss_decode(int (*get)(void *), void * gd, int (*put)(int, void *), void *pd)
 		}
 		else
 		{
-			if ((i = getbit(get, gd, EI)) == EOF)
+			if ((i = getbit(get, gd, EI)) < 0)
 				break;
 
-			if ((j = getbit(get, gd, EJ)) == EOF)
+			if ((j = getbit(get, gd, EJ)) < 0)
 				break;
 
 			for (k = 0; k <= j + 1; k++)
@@ -69,4 +67,6 @@ lzss_decode(int (*get)(void *), void * gd, int (*put)(int, void *), void *pd)
 			}
 		}
 	}
+
+	return lzss_OK;
 }
