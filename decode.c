@@ -1,8 +1,10 @@
+#include <stdio.h>
+
 #include <lzss.h>
 
 /* get n bits */
 static int
-getbit(FILE * infile, int n)
+getbit(int (*get)(void *), void *gd, int n)
 {
 	int i, x;
 	static int buf, mask = 0;
@@ -12,7 +14,7 @@ getbit(FILE * infile, int n)
 	{
 		if (mask == 0)
 		{
-			if ((buf = fgetc(infile)) == EOF)
+			if ((buf = get(gd)) == EOF)
 				return EOF;
 
 			mask = 128;
@@ -30,7 +32,7 @@ getbit(FILE * infile, int n)
 }
 
 void
-lzss_decode(FILE *infile, FILE *outfile)
+lzss_decode(int (*get)(void *), void * gd, int (*put)(int, void *), void *pd)
 {
 	int i, j, k, r, c;
 
@@ -39,29 +41,29 @@ lzss_decode(FILE *infile, FILE *outfile)
 
 	r = N - F;
 
-	while ((c = getbit(infile, 1)) != EOF)
+	while ((c = getbit(get, gd, 1)) != EOF)
 	{
 		if (c)
 		{
-			if ((c = getbit(infile, 8)) == EOF)
+			if ((c = getbit(get, gd, 8)) == EOF)
 				break;
 
-			fputc(c, outfile);
+			put(c, pd);
 			buffer[r++] = c;
 			r &= (N - 1);
 		}
 		else
 		{
-			if ((i = getbit(infile, EI)) == EOF)
+			if ((i = getbit(get, gd, EI)) == EOF)
 				break;
 
-			if ((j = getbit(infile, EJ)) == EOF)
+			if ((j = getbit(get, gd, EJ)) == EOF)
 				break;
 
 			for (k = 0; k <= j + 1; k++)
 			{
 				c = buffer[(i + k) & (N - 1)];
-				fputc(c, outfile);
+				put(c, pd);
 				buffer[r++] = c;
 				r &= (N - 1);
 			}

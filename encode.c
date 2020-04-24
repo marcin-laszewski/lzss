@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <lzss.h>
@@ -17,13 +18,13 @@ error(void)
 }
 
 static void
-putbit1(FILE *outfile)
+putbit1(int (* put)(int c, void *), void *pd)
 {
 	bit_buffer |= bit_mask;
 
 	if ((bit_mask >>= 1) == 0)
 	{
-		if (fputc(bit_buffer, outfile) == EOF)
+		if (put(bit_buffer, pd) == EOF)
 			error();
 
 		bit_buffer = 0;
@@ -33,11 +34,11 @@ putbit1(FILE *outfile)
 }
 
 static void
-putbit0(FILE *outfile)
+putbit0(int (* put)(int c, void *), void *pd)
 {
 	if ((bit_mask >>= 1) == 0)
 	{
-		if (fputc(bit_buffer, outfile) == EOF)
+		if (put(bit_buffer, pd) == EOF)
 			error();
 
 		bit_buffer = 0;
@@ -47,36 +48,36 @@ putbit0(FILE *outfile)
 }
 
 static void
-output1(FILE * outfile, int c)
+output1(int (* put)(int c, void *), void *pd, int c)
 {
 	int mask;
 
-	putbit1(outfile);
+	putbit1(put, pd);
 	mask = 256;
 
 	while (mask >>= 1)
 	{
 		if (c & mask)
-			putbit1(outfile);
+			putbit1(put, pd);
 		else
-			putbit0(outfile);
+			putbit0(put, pd);
 	}
 }
 
 static void
-output2(FILE *outfile, int x, int y)
+output2(int (* put)(int c, void *), void *pd, int x, int y)
 {
 	int mask;
 
-	putbit0(outfile);
+	putbit0(put, pd);
 	mask = N;
 
 	while (mask >>= 1)
 	{
 		if (x & mask)
-			putbit1(outfile);
+			putbit1(put, pd);
 		else
-			putbit0(outfile);
+			putbit0(put, pd);
 	}
 
 	mask = (1 << EJ);
@@ -84,18 +85,18 @@ output2(FILE *outfile, int x, int y)
 	while (mask >>= 1)
 	{
 		if (y & mask)
-			putbit1(outfile);
+			putbit1(put, pd);
 		else
-			putbit0(outfile);
+			putbit0(put, pd);
 	}
 }
 
 static void
-flush_bit_buffer(FILE *outfile)
+flush_bit_buffer(int (* put)(int c, void *), void *pd)
 {
 	if (bit_mask != 128)
 	{
-		if (fputc(bit_buffer, outfile) == EOF)
+		if (put(bit_buffer, pd) == EOF)
 			error();
 
 		codecount++;
@@ -103,7 +104,7 @@ flush_bit_buffer(FILE *outfile)
 }
 
 void
-lzss_encode(FILE *infile, FILE *outfile)
+lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 {
 	int i, j, f1, x, y, r, s, bufferend, c;
 
@@ -112,7 +113,7 @@ lzss_encode(FILE *infile, FILE *outfile)
 
 	for (i = N - F; i < N * 2; i++)
 	{
-		if ((c = fgetc(infile)) == EOF)
+		if ((c = get(gd)) == EOF)
 			break;
 		buffer[i] = c;
 		textcount++;
@@ -146,10 +147,10 @@ lzss_encode(FILE *infile, FILE *outfile)
 		if (y <= P)
 		{
 			y = 1;
-			output1(outfile, c);
+			output1(put, pd, c);
 		}
 		else
-			output2(outfile, x & (N - 1), y - 2);
+			output2(put, pd, x & (N - 1), y - 2);
 
 		r += y;
 		s += y;
@@ -166,7 +167,7 @@ lzss_encode(FILE *infile, FILE *outfile)
 
 			while (bufferend < N * 2)
 			{
-				if ((c = fgetc(infile)) == EOF)
+				if ((c = get(gd)) == EOF)
 					break;
 
 				buffer[bufferend++] = c;
@@ -175,5 +176,5 @@ lzss_encode(FILE *infile, FILE *outfile)
 		}
 	}
 
-	flush_bit_buffer(outfile);
+	flush_bit_buffer(put, pd);
 }
