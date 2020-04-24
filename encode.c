@@ -128,6 +128,7 @@ flush_bit_buffer(int (* put)(int c, void *), void *pd)
 int
 lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 {
+	unsigned char buffer[lzss_BUFLEN];
 	int i, j, f1, x, y, r, s, bufferend, c;
 
 	for (i = 0; i < lzss_N - lzss_F; i++)

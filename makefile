@@ -5,7 +5,6 @@ CFLAGS	+= -g
 C_NAME	= lzss-c
 C_OUT	= $(C_NAME)
 C_OBJS	= \
-	buffer.o \
 	c-main.o \
 	encode.o \
 
