@@ -32,7 +32,7 @@ $(EXEC_D_OUT): $(EXEC_D_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 distclean: clean
-	$(RM) $(C_OUT) $(D_OUT) *~
+	$(RM) $(C_OUT) $(D_OUT) $(EXEC_D_OUT) *~
 
 clean::
-	$(RM) $(C_OBJS) $(D_OBJS)
+	$(RM) $(C_OBJS) $(D_OBJS) $(EXEC_D_OBJS)
