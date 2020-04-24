@@ -2,10 +2,10 @@
 
 #define P   1			/* If match length <= P then output one character */
 
-unsigned long codecount = 0;
-unsigned long textcount = 0;
-int bit_buffer = 0;
-int bit_mask = 128;
+static unsigned long codecount = 0;
+static unsigned long textcount = 0;
+static int bit_buffer = 0;
+static int bit_mask = 128;
 
 static int
 putbit1(int (* put)(int c, void *), void *pd)
