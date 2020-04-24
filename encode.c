@@ -176,8 +176,4 @@ lzss_encode(FILE *infile, FILE *outfile)
 	}
 
 	flush_bit_buffer(outfile);
-
-	fprintf(stderr, "text:  %ld bytes\n", textcount);
-	fprintf(stderr, "code:  %ld bytes (%ld%%)\n",
-		codecount, (codecount * 100) / textcount);
 }
