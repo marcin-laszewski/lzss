@@ -1,3 +1,3 @@
 #include <lzss.h>
 
-unsigned char buffer[N * 2];
+unsigned char buffer[lzss_N * 2];

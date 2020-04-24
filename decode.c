@@ -34,10 +34,10 @@ lzss_decode(int (*get)(void *), void * gd, int (*put)(int, void *), void *pd)
 {
 	int i, j, k, r, c;
 
-	for (i = 0; i < N - F; i++)
+	for (i = 0; i < lzss_N - lzss_F; i++)
 		buffer[i] = ' ';
 
-	r = N - F;
+	r = lzss_N - lzss_F;
 
 	while ((c = getbit(get, gd, 1)) >= 0)
 	{
@@ -48,22 +48,22 @@ lzss_decode(int (*get)(void *), void * gd, int (*put)(int, void *), void *pd)
 
 			put(c, pd);
 			buffer[r++] = c;
-			r &= (N - 1);
+			r &= (lzss_N - 1);
 		}
 		else
 		{
-			if ((i = getbit(get, gd, EI)) < 0)
+			if ((i = getbit(get, gd, lzss_EI)) < 0)
 				break;
 
-			if ((j = getbit(get, gd, EJ)) < 0)
+			if ((j = getbit(get, gd, lzss_EJ)) < 0)
 				break;
 
 			for (k = 0; k <= j + 1; k++)
 			{
-				c = buffer[(i + k) & (N - 1)];
+				c = buffer[(i + k) & (lzss_N - 1)];
 				put(c, pd);
 				buffer[r++] = c;
-				r &= (N - 1);
+				r &= (lzss_N - 1);
 			}
 		}
 	}

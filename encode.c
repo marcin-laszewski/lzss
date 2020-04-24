@@ -76,7 +76,7 @@ output2(int (* put)(int c, void *), void *pd, int x, int y)
 	if (putbit0(put, pd) < 0)
 		return lzss_OUTPUT;
 
-	mask = N;
+	mask = lzss_N;
 
 	while (mask >>= 1)
 	{
@@ -92,7 +92,7 @@ output2(int (* put)(int c, void *), void *pd, int x, int y)
 		}
 	}
 
-	mask = (1 << EJ);
+	mask = (1 << lzss_EJ);
 
 	while (mask >>= 1)
 	{
@@ -130,10 +130,10 @@ lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 {
 	int i, j, f1, x, y, r, s, bufferend, c;
 
-	for (i = 0; i < N - F; i++)
+	for (i = 0; i < lzss_N - lzss_F; i++)
 		buffer[i] = ' ';
 
-	for (i = N - F; i < N * 2; i++)
+	for (i = lzss_N - lzss_F; i < lzss_N * 2; i++)
 	{
 		if ((c = get(gd)) < 0)
 			break;
@@ -142,12 +142,12 @@ lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 	}
 
 	bufferend = i;
-	r = N - F;
+	r = lzss_N - lzss_F;
 	s = 0;
 
 	while (r < bufferend)
 	{
-		f1 = (F <= bufferend - r) ? F : bufferend - r;
+		f1 = (lzss_F <= bufferend - r) ? lzss_F : bufferend - r;
 		x = 0;
 		y = 1;
 		c = buffer[r];
@@ -174,24 +174,24 @@ lzss_encode(int (*get)(void *), void *gd, int (* put)(int c, void *), void *pd)
 		}
 		else
 		{
-			if (output2(put, pd, x & (N - 1), y - 2) < 0)
+			if (output2(put, pd, x & (lzss_N - 1), y - 2) < 0)
 				return lzss_OUTPUT;
 		}
 
 		r += y;
 		s += y;
 
-		if (r >= N * 2 - F)
+		if (r >= lzss_N * 2 - lzss_F)
 		{
-			for (i = 0; i < N; i++)
-				buffer[i] = buffer[i + N];
+			for (i = 0; i < lzss_N; i++)
+				buffer[i] = buffer[i + lzss_N];
 
-			bufferend -= N;
+			bufferend -= lzss_N;
 
-			r -= N;
-			s -= N;
+			r -= lzss_N;
+			s -= lzss_N;
 
-			while (bufferend < N * 2)
+			while (bufferend < lzss_N * 2)
 			{
 				if ((c = get(gd)) < 0)
 					break;
