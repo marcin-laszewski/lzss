@@ -17,6 +17,12 @@
 #define	lzss_get(f)	((int(*)(void *))(f))
 #define	lzss_put(f)	((int(*)(int, void*))(f))
 
+struct lzss_decode
+{
+	int buf;
+	int mask;
+};
+
 struct lzss_encode
 {
 	unsigned long codecount;
@@ -29,9 +35,11 @@ struct lzss_encode
 extern "C" {
 #endif
 
-int lzss_decode(
+int lzss_decode(struct lzss_decode *l,
         int (*get)(void *), void *gd,
         int (*put)(int, void *), void *pd);
+void lzss_decode_init(struct lzss_decode *l);
+
 int lzss_encode(struct lzss_encode * l,
         int (*get)(void *), void *gd,
         int (*put)(int, void *), void *pd);

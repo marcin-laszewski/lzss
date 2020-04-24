@@ -51,10 +51,15 @@ main(int argc, char * const argv[])
         return 1;
     }
 
-    if(lzss_decode(lzss_get(fgetc), fin, lzss_put(fputc), fout) < 0)
     {
-        fputs("Cannot decode.\n", stderr);
-        return 1;
+        struct lzss_decode l;
+
+        lzss_decode_init(&l);
+        if(lzss_decode(&l, lzss_get(fgetc), fin, lzss_put(fputc), fout) < 0)
+        {
+            fputs("Cannot decode.\n", stderr);
+            return 1;
+        }
     }
 
     if(fchmod(fileno(fout), mode) < 0)

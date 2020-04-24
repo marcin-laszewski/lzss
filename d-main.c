@@ -4,7 +4,10 @@
 
 int main(int argc, char *argv[])
 {
-	return lzss_decode(lzss_get(fgetc), stdin, lzss_put(fputc), stdout) < 0
+	struct lzss_decode l;
+
+	lzss_decode_init(&l);
+	return lzss_decode(&l, lzss_get(fgetc), stdin, lzss_put(fputc), stdout) < 0
 		? 1
 		: 0;
 }
