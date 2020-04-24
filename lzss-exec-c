@@ -1,0 +1,47 @@
+#!/bin/sh
+
+if test $# -lt 2
+then
+	echo "$0 {--interpreter text | --magic hex} [...exec-files... ]" 1>&2
+	exit 1
+fi
+
+create()
+{
+	case "$1" in
+	--interpreter)	echo "#!$2";;
+	--magic)	echo "$2" | xxd -r -p;;
+	*)		echo "Unknown parameter: $1" 1>&2
+			exit 3;;
+	esac
+
+	lzss-c
+}
+
+cmd="$1"
+val="$2"
+
+shift 2
+
+exit_rm()
+{
+	rm -f "$@"
+	exit 2
+}
+
+if test $# -eq 0
+then
+	create "$cmd" "$val"
+else
+	ext=".lzss.$$"
+	for f in "$@"
+	do
+		if ! create "$cmd" "$val" < "$f" > "$f.$ext" \
+		|| ! mv "$f.$ext" "$f"
+		then
+			exit_rm "$f.$ext"
+		fi
+
+		chmod +x "$f"
+	done
+fi

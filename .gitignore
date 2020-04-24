@@ -2,3 +2,4 @@
 *.o
 lzss-c
 lzss-d
+lzss-exec-d

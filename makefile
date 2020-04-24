@@ -16,12 +16,22 @@ D_OBJS	= \
 	d-main.o \
 	decode.o \
 
-all:	$(C_OUT) $(D_OUT)
+EXEC_D_NAME	= lzss-exec-d
+EXEC_D_OUT	= $(EXEC_D_NAME)
+EXEC_D_OBJS	= \
+	buffer.o \
+	exec-d.o \
+	decode.o \
+
+all:	$(C_OUT) $(D_OUT) $(EXEC_D_OUT)
 
 $(C_OUT): $(C_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 $(D_OUT): $(D_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+$(EXEC_D_OUT): $(EXEC_D_OBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 distclean: clean
