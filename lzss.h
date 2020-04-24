@@ -6,6 +6,8 @@
 #define lzss_N  (1 << lzss_EI)			/* buffer size */
 #define lzss_F ((1 << lzss_EJ) + 1)	/* lookahead buffer size */
 
+#define	lzss_BUFLEN	(lzss_N << 1)
+
 #define	lzss_OK	0
 #define	lzss_OUTPUT	(-2)
 

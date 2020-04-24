@@ -32,6 +32,7 @@ getbit(int (*get)(void *), void *gd, int n)
 int
 lzss_decode(int (*get)(void *), void * gd, int (*put)(int, void *), void *pd)
 {
+	unsigned char buffer[lzss_BUFLEN];
 	int i, j, k, r, c;
 
 	for (i = 0; i < lzss_N - lzss_F; i++)

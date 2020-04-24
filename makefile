@@ -12,14 +12,12 @@ C_OBJS	= \
 D_NAME	= lzss-d
 D_OUT	= $(D_NAME)
 D_OBJS	= \
-	buffer.o \
 	d-main.o \
 	decode.o \
 
 EXEC_D_NAME	= lzss-exec-d
 EXEC_D_OUT	= $(EXEC_D_NAME)
 EXEC_D_OBJS	= \
-	buffer.o \
 	exec-d.o \
 	decode.o \
 
