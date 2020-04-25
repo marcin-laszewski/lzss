@@ -62,13 +62,22 @@ main(int argc, char * const argv[])
         }
     }
 
+#if !defined(CHMOD)
     if(fchmod(fileno(fout), mode) < 0)
     {
         perror(tmp);
         return -1;
     }
-
+#endif
     fclose(fout);
+#if defined(CHMOD)
+    if(chmod(tmp, mode) < 0)
+    {
+        perror(tmp);
+        return -1;
+    }
+#endif
+
     fclose(fin);
 
     execv(tmp, argv + 1);

@@ -3,6 +3,7 @@ CFLAGS	+= -I.
 #CFLAGS	+= -g
 #CFLAGS	+= -O
 #CFLAGS	+= -Os
+CFLAGS	+= -DCHMOD
 
 C_NAME	= lzss-c
 C_OUT	= $(C_NAME)
