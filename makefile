@@ -1,6 +1,8 @@
 CFLAGS	+= -Wall
 CFLAGS	+= -I.
-CFLAGS	+= -g
+#CFLAGS	+= -g
+#CFLAGS	+= -O
+#CFLAGS	+= -Os
 
 C_NAME	= lzss-c
 C_OUT	= $(C_NAME)
