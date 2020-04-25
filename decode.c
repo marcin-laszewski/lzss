@@ -1,39 +1,5 @@
 #include <lzss.h>
 
-void
-lzss_decode_init(struct lzss_decode *l)
-{
-	l->mask = 0;
-}
-
-/* get n bits */
-static int
-getbit(struct lzss_decode *l, int (*get)(void *), void *gd, int n)
-{
-	int i, x;
-
-	x = 0;
-	for (i = 0; i < n; i++)
-	{
-		if (l->mask == 0)
-		{
-			if ((l->buf = get(gd)) < 0)
-				return -1;
-
-			l->mask = 128;
-		}
-
-		x <<= 1;
-
-		if (l->buf & l->mask)
-			x++;
-
-		l->mask >>= 1;
-	}
-
-	return x;
-}
-
 int
 lzss_decode(struct lzss_decode * l,
 	int (*get)(void *), void * gd,
@@ -47,11 +13,11 @@ lzss_decode(struct lzss_decode * l,
 
 	r = lzss_N - lzss_F;
 
-	while ((c = getbit(l, get, gd, 1)) >= 0)
+	while ((c = lzss_getbit(l, get, gd, 1)) >= 0)
 	{
 		if (c)
 		{
-			if ((c = getbit(l, get, gd, 8)) < 0)
+			if ((c = lzss_getbit(l, get, gd, 8)) < 0)
 				break;
 
 			put(c, pd);
@@ -60,10 +26,10 @@ lzss_decode(struct lzss_decode * l,
 		}
 		else
 		{
-			if ((i = getbit(l, get, gd, lzss_EI)) < 0)
+			if ((i = lzss_getbit(l, get, gd, lzss_EI)) < 0)
 				break;
 
-			if ((j = getbit(l, get, gd, lzss_EJ)) < 0)
+			if ((j = lzss_getbit(l, get, gd, lzss_EJ)) < 0)
 				break;
 
 			for (k = 0; k <= j + 1; k++)

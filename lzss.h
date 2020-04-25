@@ -9,6 +9,7 @@
 #define	lzss_BUFLEN	(lzss_N << 1)
 
 #define	lzss_OK	0
+#define	lzss_EOF		(-1)
 #define	lzss_OUTPUT	(-2)
 
 #define	lzss_is_error(a)	((a) < 0)
@@ -31,6 +32,15 @@ struct lzss_encode
 	int bit_mask;
 };
 
+struct lzss_decode_stream
+{
+	int r;
+	int i;
+	int j;
+	int k;
+	unsigned char buffer[lzss_BUFLEN];
+};
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -40,10 +50,17 @@ int lzss_decode(struct lzss_decode *l,
         int (*put)(int, void *), void *pd);
 void lzss_decode_init(struct lzss_decode *l);
 
+void lzss_decode_open(struct lzss_decode_stream *f);
+int lzss_decode_get(struct lzss_decode_stream *f,
+			struct lzss_decode *l,
+			int (*get)(void *), void *gd);
+
 int lzss_encode(struct lzss_encode * l,
         int (*get)(void *), void *gd,
         int (*put)(int, void *), void *pd);
 void lzss_encode_init(struct lzss_encode * l);
+
+int lzss_getbit(struct lzss_decode *l, int (*get)(void *), void *gd, int n);
 
 #if defined(__cplusplus)
 }
