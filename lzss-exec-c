@@ -1,8 +1,16 @@
 #!/bin/sh
 
+if test "x$1" = 'x--mode'
+then
+	mode="$2"
+	shift 2
+else
+	mode='+x'
+fi
+
 if test $# -lt 2
 then
-	echo "$0 {--interpreter text | --magic hex} [...exec-files... ]" 1>&2
+	echo "$0 [--mode mode] {--interpreter text | --magic hex} [...exec-files... ]" 1>&2
 	exit 1
 fi
 
@@ -42,6 +50,6 @@ else
 			exit_rm "$f.$ext"
 		fi
 
-		chmod +x "$f"
+		chmod "$mode" "$f"
 	done
 fi
