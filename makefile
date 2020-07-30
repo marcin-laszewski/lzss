@@ -30,7 +30,7 @@ EXEC_D_OBJS	= \
 	decode/init.o \
 	getbit.o \
 
-GET_NAME	= lzss-get
+GET_NAME	= lzss-stream
 GET_OUT		= $(GET_NAME)
 GET_OBJS	= \
 	decode/init.o \
