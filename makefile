@@ -34,8 +34,8 @@ GET_NAME	= lzss-get
 GET_OUT		= $(GET_NAME)
 GET_OBJS	= \
 	decode/init.o \
-	decode/get.o \
-	decode/open.o \
+	stream/get.o \
+	stream/open.o \
 	getbit.o \
 	g-main.o \
 
