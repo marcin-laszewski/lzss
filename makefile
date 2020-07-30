@@ -4,6 +4,8 @@ CFLAGS	+= -I.
 #CFLAGS	+= -O
 #CFLAGS	+= -Os
 CFLAGS	+= -DCHMOD
+CFLAGS	+= -Dlzss_EI=11	# typically 10..13
+CFLAGS	+= -Dlzss_EJ=4	# typically 4..5
 #CFLAGS	+= -Dlzss_buf_INTERNAL
 
 C_NAME	= lzss-c

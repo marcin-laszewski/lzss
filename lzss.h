@@ -1,8 +1,13 @@
 #if !defined(LZSS_H)
 #define	LZSS_H
 
-#define lzss_EI 11			/* typically 10..13 */
-#define lzss_EJ  4			/* typically 4..5 */
+#if !defined(lzss_EI)
+#	define lzss_EI 11			/* typically 10..13 */
+#endif
+#if !defined(lzss_EJ)
+#	define lzss_EJ  4			/* typically 4..5 */
+#endif
+
 #define lzss_N  (1 << lzss_EI)			/* buffer size */
 #define lzss_F ((1 << lzss_EJ) + 1)	/* lookahead buffer size */
 
