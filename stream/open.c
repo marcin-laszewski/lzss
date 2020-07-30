@@ -1,7 +1,7 @@
 #include <lzss.h>
 
 void
-lzss_decode_open(struct lzss_decode_stream *f)
+lzss_stream_open(struct lzss_stream *f)
 {
 	int i;
 

@@ -1,7 +1,7 @@
 #include <lzss.h>
 
 int
-lzss_decode_get(struct lzss_decode_stream *f,
+lzss_stream_get(struct lzss_stream *f,
 	struct lzss_decode *l,
 	int (*get)(void *), void *gd)
 {

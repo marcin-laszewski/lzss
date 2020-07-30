@@ -37,7 +37,7 @@ struct lzss_encode
 	int bit_mask;
 };
 
-struct lzss_decode_stream
+struct lzss_stream
 {
 	int r;
 	int i;
@@ -59,8 +59,8 @@ int lzss_decode(struct lzss_decode *l,
         int (*put)(int, void *), void *pd);
 void lzss_decode_init(struct lzss_decode *l);
 
-void lzss_decode_open(struct lzss_decode_stream *f);
-int lzss_decode_get(struct lzss_decode_stream *f,
+void lzss_stream_open(struct lzss_stream *f);
+int lzss_stream_get(struct lzss_stream *f,
 			struct lzss_decode *l,
 			int (*get)(void *), void *gd);
 
