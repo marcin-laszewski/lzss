@@ -3,10 +3,26 @@ CFLAGS	+= -I.
 #CFLAGS	+= -g
 #CFLAGS	+= -O
 #CFLAGS	+= -Os
-CFLAGS	+= -DCHMOD
-CFLAGS	+= -Dlzss_EI=11	# typically 10..13
-CFLAGS	+= -Dlzss_EJ=4	# typically 4..5
-#CFLAGS	+= -Dlzss_buf_INTERNAL
+
+# Use 'chmod' instead of 'fchmod'.
+ifdef CHMOD
+	CFLAGS	+= -DCHMOD
+endif
+
+# EI = typically 10..13
+ifdef EI
+	CFLAGS	+= -Dlzss_EI=$(EI)
+endif
+
+# EJ = typically 4..5
+ifdef EJ
+	CFLAGS	+= -Dlzss_EJ=$(EJ)
+endif
+
+# Use internal buffer in 'struct lzss_stream'.
+ifdef INTBUF
+	CFLAGS	+= -Dlzss_buf_INTERNAL
+endif
 
 C_NAME	= lzss-c
 C_OUT	= $(C_NAME)
