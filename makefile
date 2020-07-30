@@ -4,6 +4,7 @@ CFLAGS	+= -I.
 #CFLAGS	+= -O
 #CFLAGS	+= -Os
 CFLAGS	+= -DCHMOD
+#CFLAGS	+= -Dlzss_buf_INTERNAL
 
 C_NAME	= lzss-c
 C_OUT	= $(C_NAME)

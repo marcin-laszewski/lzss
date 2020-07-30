@@ -38,7 +38,11 @@ struct lzss_decode_stream
 	int i;
 	int j;
 	int k;
+#if defined(lzss_buf_INTERNAL)
 	unsigned char buffer[lzss_BUFLEN];
+#else
+	unsigned char *buffer;
+#endif
 };
 
 #if defined(__cplusplus)
