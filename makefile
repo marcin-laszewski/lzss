@@ -35,6 +35,7 @@ GET_OUT		= $(GET_NAME)
 GET_OBJS	= \
 	decode/init.o \
 	decode/get.o \
+	decode/open.o \
 	getbit.o \
 	g-main.o \
 
